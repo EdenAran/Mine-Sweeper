@@ -1,256 +1,180 @@
-'use strict'
+'use strict';
 
-// Pieces Types
-var KING_WHITE = '♔';
-var QUEEN_WHITE = '♕';
-var ROOK_WHITE = '♖';
-var BISHOP_WHITE = '♗';
-var KNIGHT_WHITE = '♘';
-var PAWN_WHITE = '♙';
-var KING_BLACK = '♚';
-var QUEEN_BLACK = '♛';
-var ROOK_BLACK = '♜';
-var BISHOP_BLACK = '♝';
-var KNIGHT_BLACK = '♞';
-var PAWN_BLACK = '♟';
+const MINE = '💣';
+const FLAG = '🏁';
 
-// The Chess Board
-var gBoard;
-var gSelectedElCell = null;
-
-function restartGame() {
-    gBoard = buildBoard();
-    renderBoard(gBoard);
+var gBoard = [];
+var gMines = [];
+var gLevel = {
+    size: 4,
+    mines: 2
+};
+var gGame;
+var gTimerInterval;
+var gFlagNum;
+var gHint = {
+    num: 3,
+    isactive: false
 }
 
-function buildBoard() {
-    var board = [];
-    for (var i = 0; i < 8; i++) {
-        board[i] = [];
-        for (var j = 0; j < 8; j++) {
-            if (i === 1) board[i][j] = PAWN_BLACK;
-            else if (i === 6) board[i][j] = PAWN_WHITE;
-            else board[i][j] = '';
-        }
+function init() {
+    if (gTimerInterval) clearInterval(gTimerInterval);
+    gTimerInterval = null;
+    gFlagNum = gLevel.mines;
+    gGame = {
+        isOn: false,
+        shownCount: 0,
+        markedCount: 0,
+        secsPassed: 0,
+        lives: 3
     }
-    board[0][0] = board[0][7] = ROOK_BLACK;
-    board[0][1] = board[0][6] = KNIGHT_BLACK;
-    board[0][2] = board[0][5] = BISHOP_BLACK;
-    board[0][3] = KING_BLACK;
-    board[0][4] = QUEEN_BLACK;
+    //Reset the lives
+    updateElementInnerText('lives', '❤️❤️❤️');
+    //Reset the smiley
+    updateElementInnerText('smiley', '😊');
 
-    board[7][0] = board[7][7] = ROOK_WHITE;
-    board[7][1] = board[7][6] = KNIGHT_WHITE;
-    board[7][2] = board[7][5] = BISHOP_WHITE;
-    board[7][3] = KING_WHITE;
-    board[7][4] = QUEEN_WHITE;
-    console.table(board);
-    return board;
+    //Reset the timer
+    updateElementInnerText('timer', ('00' + gGame.secsPassed).slice(-3));
 
-}
+    //Reset the mine count
+    updateElementInnerText('mines', ('0' + gFlagNum).slice(-2));
 
-function renderBoard(board) {
-    var strHtml = '';
-    for (var i = 0; i < board.length; i++) {
-        var row = board[i];
-        strHtml += '<tr>';
-        for (var j = 0; j < row.length; j++) {
-            var cell = row[j];
-            var className = ((i + j + 1) % 2 === 0) ? 'white' : 'black';
-            var tdId = `cell-${i}-${j}`;
-            strHtml += `<td id="${tdId}" onclick="cellClicked(this)" class="${className}">`
-            strHtml += cell;
-            strHtml += '</td>';
-        }
-        strHtml += '</tr>';
-    }
-    var elMat = document.querySelector('.game-board');
-    elMat.innerHTML = strHtml;
-}
-
-
-function cellClicked(elCell) {
-
-    if (elCell.classList.contains('mark')) {
-        movePiece(gSelectedElCell, elCell);
-        return;
-    }
-    cleanBoard();
-
-    elCell.classList.add('selected');
-    gSelectedElCell = elCell;
-
-    // console.log('elCell.id: ', elCell.id);
-    var cellCoord = getCellCoord(elCell.id); // {i:2, j:3}
-    var piece = gBoard[cellCoord.i][cellCoord.j];
-
-    var possibleCoords = [];
-    switch (piece) {
-        case ROOK_BLACK:
-        case ROOK_WHITE:
-            possibleCoords = getAllPossibleCoordsRook(cellCoord);
-            break;
-        case BISHOP_BLACK:
-        case BISHOP_WHITE:
-            possibleCoords = getAllPossibleCoordsBishop(cellCoord);
-            break;
-        case KNIGHT_BLACK:
-        case KNIGHT_WHITE:
-            possibleCoords = getAllPossibleCoordsKnight(cellCoord);
-            break;
-        case PAWN_BLACK:
-        case PAWN_WHITE:
-            possibleCoords = getAllPossibleCoordsPawn(cellCoord, piece === PAWN_WHITE);
-            break;
-
-    }
-    markCells(possibleCoords);
-}
-
-function movePiece(elFromCell, elToCell) {
-    var fromCoord = getCellCoord(elFromCell.id); // {i:2, j:3}
-    var toCoord = getCellCoord(elToCell.id); // {i:2, j:3}
-
-    // Update the model!
-    // console.table(gBoard)
-    var piece = gBoard[fromCoord.i][fromCoord.j];
-    gBoard[fromCoord.i][fromCoord.j] = ''
-    gBoard[toCoord.i][toCoord.j] = piece
-    // console.table(gBoard)
-
-    // Update the DOM
-    renderBoard(gBoard)
-}
-
-function markCells(coords) { // [{i:2,j:3}]
-    for (var i = 0; i < coords.length; i++) {
-        var currCoord = coords[i];
-        var tdId = `cell-${currCoord.i}-${currCoord.j}`;
-        var elCell = document.querySelector(`#${tdId}`);
-        elCell.classList.add('mark');
-    }
-}
-
-// Gets a string such as:  'cell-2-7' and returns {i:2, j:7}
-function getCellCoord(strCellId) {
-    var parts = strCellId.split('-');
-    var coord = {
-        i: +parts[1],
-        j: +parts[2],
+    //Blocks the right-click drop-down menu
+    window.oncontextmenu = function () {
+        return false;
     };
-    // var coord = {};
-    // coord.i = +parts[1];
-    // coord.j = +parts[2];
-    return coord;
+    gBoard = createBoard();
+    renderBoard();
+    gGame.isOn = true;
 }
 
-
-
-function cleanBoard() {
-    var elTds = document.querySelectorAll('.mark, .selected');
-    for (var i = 0; i < elTds.length; i++) {
-        elTds[i].classList.remove('mark', 'selected');
+function cellClicked(ev, elCell) {
+    if (!gGame.isOn) return;
+    if (!gTimerInterval && ev.button === 0) {
+        gMines = setMines(elCell);
+        setMinesNegsCount();
+        renderBoard();
+        runTimer();
     }
-}
-
-function getSelector(coord) {
-    return '#cell-' + coord.i + '-' + coord.j
-}
-
-function isEmptyCell(coord) {
-    return gBoard[coord.i][coord.j] === ''
-}
-
-
-function getAllPossibleCoordsPawn(pieceCoord, isWhite) {
-    var res = []; // [{i:2, j:3}]
-    var diff = isWhite ? -1 : 1;
-    var coord = {
-        i: pieceCoord.i + diff,
-        j: pieceCoord.j
-    }
-    if (!isEmptyCell(coord)) return res
-    res.push(coord);
-    if (isWhite && pieceCoord.i === 6 || !isWhite && pieceCoord.i === 1) {
-        var secondStep = {
-            i: coord.i + diff,
-            j: coord.j
+    var cellContent
+    var location = getCellLocation(elCell);
+    var currCell = gBoard[location.i][location.j];
+    var negMinesCount = currCell.minesAroundCount;
+    if (ev.button === 0) {      //Left click
+        if (currCell.isShown) return;
+        updateElementInnerText('smiley', '😲')
+        gGame.shownCount++;
+        currCell.isShown = true;
+        if (currCell.isMine) {
+            cellContent = MINE;
+            gGame.lives--;
+            updateElementInnerText('lives', getHearts(gGame.lives));
+            if (!gGame.lives) endGame(false);
+        } else cellContent = negMinesCount;
+        if (!cellContent) expendEmptyCells(location.i, location.j);
+    } else if (ev.button === 2) {    //Right click
+        if (!gTimerInterval) return;
+        updateElementInnerText('smiley', '😲')
+        switch (elCell.innerText) {
+            case '':
+                gFlagNum--;
+                gGame.markedCount++;
+                cellContent = FLAG;
+                break;
+            case FLAG:
+                gFlagNum++;
+                gGame.markedCount--;
+                cellContent = '';
+                break;
+            default:
+                updateElementInnerText('smiley', '😊')
+                return;
         }
-        if (isEmptyCell(secondStep)) res.push(secondStep);
+        var elMinesCount = document.querySelector('.mines');
+        elMinesCount.innerText = ('0' + gFlagNum).slice(-2);
     }
-    console.log(res)
-    return res;
+    renderCell(location, cellContent);
+    if (checkWin()) endGame(true);
+    if (gGame.isOn) setTimeout(function () {
+        updateElementInnerText('smiley', '😊')
+    }, 200);
 }
 
-
-
-function getAllPossibleCoordsRook(pieceCoord) {
-    var res = [];
-    //right
-    for (var colIdx = pieceCoord.j + 1; colIdx < 8; colIdx++) {
-        var coord = { i: pieceCoord.i, j: colIdx };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-    //left
-    for (var colIdx = pieceCoord.j - 1; colIdx >= 0; colIdx--) {
-        var coord = { i: pieceCoord.i, j: colIdx };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-    //up
-    for (var rowIdx = pieceCoord.i - 1; rowIdx >= 0; rowIdx--) {
-        var coord = { i: rowIdx, j: pieceCoord.j };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-    //down
-    for (var rowIdx = pieceCoord.i + 1; rowIdx < 8; rowIdx++) {
-        var coord = { i: rowIdx, j: pieceCoord.j };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-    return res;
+function getCellLocation(elCell) {
+    var classElements = elCell.getAttribute('class').split('-');
+    return { i: +classElements[1], j: +classElements[2] }
 }
 
-function getAllPossibleCoordsBishop(pieceCoord) { // {i:2, j:3}
-    var res = [];
-    // upper right
-    var rowIdx = pieceCoord.i - 1;
-    for (var colIdx = pieceCoord.j + 1; rowIdx >= 0 && colIdx < 8; colIdx++) {
-        var coord = { i: rowIdx--, j: colIdx };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-
-    // upper left
-    rowIdx = pieceCoord.i - 1;
-    for (var colIdx = pieceCoord.j - 1; rowIdx >= 0 && colIdx >= 0; colIdx--) {
-        var coord = { i: rowIdx--, j: colIdx };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-
-    // lower left
-    rowIdx = pieceCoord.i + 1;
-    for (var colIdx = pieceCoord.j - 1; rowIdx < 8 && colIdx >= 0; colIdx--) {
-        var coord = { i: rowIdx++, j: colIdx };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-
-    // lower right
-    rowIdx = pieceCoord.i + 1;
-    for (var colIdx = pieceCoord.j + 1; rowIdx < 8 && colIdx < 8; colIdx++) {
-        var coord = { i: rowIdx++, j: colIdx };
-        if (!isEmptyCell(coord)) break;
-        res.push(coord);
-    }
-    return res;
+function runTimer() {
+    var elTimer = document.querySelector('.timer');
+    gTimerInterval = setInterval(function () {
+        gGame.secsPassed++;
+        elTimer.innerText = ('00' + gGame.secsPassed).slice(-3);
+    }, 1000)
 }
 
-function getAllPossibleCoordsKnight(pieceCoord) {
-    var res = [];
+function checkWin() {
+    return (gGame.shownCount + gGame.markedCount === gLevel.size ** 2);
+}
 
-    return res;
+function endGame(win) {
+    gGame.isOn = false;
+    clearInterval(gTimerInterval);
+    var elSmiley = document.querySelector('.smiley')
+    if (win) {
+        elSmiley.innerText = '😎';
+        alert('You have WON!');
+    } else {
+        elSmiley.innerText = '😭';
+        alert('You have LOST!');
+    }
+}
+
+function setDifficulty(elBtn) {
+    var diff = elBtn.innerText;
+    switch (diff) {
+        case 'Easy':
+            gLevel.size = 4;
+            gLevel.mines = 2;
+            break;
+        case 'Medium':
+            gLevel.size = 8;
+            gLevel.mines = 12;
+            break;
+        case 'Hard':
+            gLevel.size = 12;
+            gLevel.mines = 30;
+            break;
+    }
+    init();
+}
+
+function expendEmptyCells(iIdx, jIdx) {
+    for (var i = iIdx - 1; i <= iIdx + 1; i++) {
+        if (i < 0 || i > gLevel.size - 1) continue;
+        for (var j = jIdx - 1; j <= jIdx + 1; j++) {
+            var currCell = gBoard[i][j];
+            if ((i === iIdx && j === jIdx) || (j < 0 || j > gLevel.size - 1) || currCell.isShown) continue;
+            currCell.isShown = true;
+            gGame.shownCount++;
+            renderCell({ i, j }, currCell.minesAroundCount);
+            if (currCell.minesAroundCount === 0) expendEmptyCells(i, j);
+        }
+    }
+    return;
+}
+
+function getHearts(numOfLives) {
+    switch (numOfLives) {
+        case 3:
+            return '❤️❤️❤️'
+        case 2:
+            return '❤️❤️🤍'
+        case 1:
+            return '❤️🤍🤍'
+        case 0:
+            return '🤍🤍🤍'
+        default:
+            break;
+    }
 }

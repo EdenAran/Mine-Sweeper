@@ -1,0 +1,81 @@
+body{
+    background-color: lightsteelblue;
+}
+
+table {
+    margin: 30px auto;
+    table-layout: initial;
+}
+
+h2{
+    margin:0 auto;
+}
+.board {
+    position: absolute;
+}
+
+.hints{
+    margin:auto;
+    border: 2px black solid;
+    width: 100px;
+    text-align: center;
+}
+
+.hints span{
+    width: 30px;
+    border-radius: 50%;
+}
+
+.hints span:hover{
+cursor: pointer;
+background-color: yellow;
+}
+
+.head span {
+    width: 40px;
+    margin: auto;
+    border: 2px black solid;
+    background-color: lightgray;
+    padding: 3px 5px;
+}
+
+.smiley:hover {
+    cursor: pointer;
+}
+
+tbody {
+    margin: 5px auto;
+    position: absolute;
+    border: 2px black solid;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    border: 1px darkgray solid;
+    background-color: lightblue;
+    text-align: center;
+    color: blue;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.cell:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.diff h3 {
+    align-content: center;
+    margin: auto;
+    padding-bottom: 10px;
+}
+
+.diff button {
+    margin-bottom: 10px;
+}
+
+.lives {
+    margin:0;
+    padding:0;
+}
