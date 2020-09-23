@@ -8,12 +8,6 @@
 
 <body onload="init()">
     <div class="container">
-        <div class="hints">
-            <h2>Hints</h2>
-            <span class="hint1">💡</span>
-            <span class="hint2">💡</span>
-            <span class="hint3">💡</span>
-        </div>
         <table>
             <thead>
                 <tr>
@@ -23,7 +17,17 @@
                 </tr>
                 <tr>
                     <td>
-                        <h3 class="lives">Lives: 
+                        <div class="hints">
+                            <h2>Hints</h2>
+                            <span class="hint-1" onclick="handleHintPress(this)"></span>
+                            <span class="hint-2" onclick="handleHintPress(this)"></span>
+                            <span class="hint-3" onclick="handleHintPress(this)"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3 class="lives">Lives:
                             <span></span>
                         </h3>
                     </td>
