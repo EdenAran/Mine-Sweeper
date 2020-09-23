@@ -68,7 +68,7 @@ function cellClicked(ev, elCell) {
         return;
     }
     if (ev.button === 0) {      //Left click
-        if (currCell.isShown) return;
+        if (currCell.isShown || currCell.isMarked) return;
         updateElementInnerText('smiley', '😲')
         gGame.shownCount++;
         currCell.isShown = true;
@@ -84,11 +84,14 @@ function cellClicked(ev, elCell) {
         updateElementInnerText('smiley', '😲')
         switch (elCell.innerText) {
             case '':
+                if(gFlagNum === 0) return;
+                currCell.isMarked = true;
                 gFlagNum--;
                 gGame.markedCount++;
                 cellContent = FLAG;
                 break;
             case FLAG:
+                currCell.isMarked = false;
                 gFlagNum++;
                 gGame.markedCount--;
                 cellContent = '';
@@ -161,7 +164,7 @@ function expendEmptyCells(iIdx, jIdx) {
         if (i < 0 || i > gLevel.size - 1) continue;
         for (var j = jIdx - 1; j <= jIdx + 1; j++) {
             var currCell = gBoard[i][j];
-            if ((i === iIdx && j === jIdx) || (j < 0 || j > gLevel.size - 1) || currCell.isShown) continue;
+            if ((i === iIdx && j === jIdx) || (j < 0 || j > gLevel.size - 1) || currCell.isShown || currCell.isMarked) continue;
             currCell.isShown = true;
             gGame.shownCount++;
             renderCell({ i, j }, currCell.minesAroundCount);
