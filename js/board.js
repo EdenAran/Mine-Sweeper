@@ -1,10 +1,12 @@
+'use strict';
+
 function renderBoard() {
     var strHTML = '<table>';
     var innerText = '';
     for (var i = 0; i < gLevel.size; i++) {
         strHTML += '<tr>';
         for (var j = 0; j < gLevel.size; j++) {
-            var cellClass = `cell cell-${i}-${j}`;
+            var cellClass = `pressable cell cell-${i}-${j}`;
             var currCell = gBoard[i][j];
             if (currCell.isShown) innerText = (currCell.isMine) ? MINE : currCell.minesAroundCount;
             strHTML += `<td class="${cellClass}" onmousedown="cellClicked(event, this)"> `
@@ -40,7 +42,6 @@ function setMines(elCell) {
     for (var i = 0; i < gLevel.mines; i++) {
         iIdx = getRandomIntInclusive(0, gLevel.size - 1);
         jIdx = getRandomIntInclusive(0, gLevel.size - 1);
-        console.log(iIdx,jIdx)
         if ((location.i === iIdx && location.j === jIdx) ||
             gBoard[iIdx][jIdx].isMine) {
             i--;
@@ -49,7 +50,7 @@ function setMines(elCell) {
         var currCell = gBoard[iIdx][jIdx];
         currCell.isMine = true;
         var currMine = { i: iIdx, j: jIdx };
-        gMines.push(currMine);
+        mines.push(currMine);
     }
     return mines;
 }

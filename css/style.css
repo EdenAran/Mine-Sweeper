@@ -1,36 +1,35 @@
 body {
     background-color: lightsteelblue;
+    font-family: cursive;
 }
 
 table {
+    position: static;
     margin: 30px auto;
     table-layout: initial;
+    /* top: -250px; */
 }
 
 h2 {
     margin: 0 auto;
 }
 
-.board {
-    position: absolute;
-}
-
 .hints {
-    margin: auto;
-    border: 2px black solid;
+    margin: 0 auto 10px auto;
     width: 150px;
+    height: 60px;
     text-align: center;
+    font-size: 15px;
 }
 
 .hints span {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
 }
 
 .hints span img {
     border-radius: 20%;
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
 .hints span img:hover {
@@ -38,8 +37,15 @@ h2 {
     opacity: 1;
 }
 
+.head {
+    margin: auto;
+    text-align: center;
+}
+
 .head span {
-    width: 40px;
+    position: relative;
+    /* left: 20px; */
+    width: 45px;
     margin: auto;
     border: 2px black solid;
     background-color: lightgray;
@@ -47,13 +53,13 @@ h2 {
 }
 
 .smiley:hover {
+    background-color: silver;
     cursor: pointer;
 }
 
-tbody {
-    margin: 5px auto;
-    position: absolute;
-    border: 2px black solid;
+.board {
+    position: relative;
+    top: -260px;
 }
 
 .cell {
@@ -70,20 +76,172 @@ tbody {
 .cell:hover {
     background-color: lightgray;
     cursor: pointer;
-    transform: translate(0.8px, 0.8px);
+}
+
+.pressable:active {
+    transform: translate(0.9px, 0.9px);
+}
+
+.diff {
+    margin: auto;
+    width: 200px;
+    height: 60px;
+    text-align: center;
 }
 
 .diff h3 {
-    align-content: center;
     margin: auto;
-    padding-bottom: 10px;
+    padding-bottom: 2px;
 }
 
 .diff button {
+    all: unset;
     margin-bottom: 10px;
+    border-radius: 50%;
+    height: 20px;
+    font-weight: bold;
+    font-size: 80%;
+    padding: 1px 5px;
+    background-color: rgb(206, 205, 205);
+    border: 3px grey outset;
+}
+
+.diff button:hover {
+    background-color: silver;
+    cursor: pointer;
 }
 
 .lives {
+    margin: 0 auto 10px auto;
+    text-align: center;
+}
+
+.easy, .medium, .hard {
+    width: 30px;
+}
+
+.best-scores {
+    position: relative;
+    top: -260px;
+    left: -200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.best-scores td {
+    border: 2px black solid;
+}
+
+.reset-scores td {
+    border: 3px outset rgb(95, 51, 51);
+    border-radius: 10%;
+    margin-top: 10px;
+    font-size: 16px;
+    height: 30px;
+    font-weight: bold;
+    background-color: rgb(211, 137, 137);
+}
+
+.reset-scores td:hover {
+    background-color: rgb(255, 183, 183);
+    cursor: pointer;
+}
+
+.safe-click {
+    width: 150px;
+    text-align: center;
+    margin: auto;
+    /* padding: 0; */
+    font-size: 20px;
+    top: -260px;
+    /* left: 180px; */
+    position: relative;
+}
+
+.safe-click h4 {
     margin: 0;
-    padding: 0;
+    width: auto;
+    font-size: 15px;
+}
+
+.safe-click button {
+    all: unset;
+    border-radius: 10%;
+    height: 30px;
+    font-weight: bold;
+    font-size: 80%;
+    padding: 1px 5px;
+    background-color: rgb(97, 182, 207);
+    border: 3px double;
+}
+
+.safe-click button:hover {
+    background-color: rgb(121, 210, 233);
+    cursor: pointer;
+}
+
+.manual {
+    position: relative;
+    margin: auto;
+    width: 150px;
+    text-align: center;
+    left: 200px;
+    height: 50px;
+    top: -200px;
+}
+
+.manual-btn, .manual-start {
+    all: unset;
+    margin: auto;
+    border-radius: 5%;
+    height: 20px;
+    font-weight: bold;
+    font-size: 100%;
+    padding: 5px 5px 10px 5px;
+    background-color: rgb(120, 194, 157);
+    border: 3px rgb(95, 148, 95) outset;
+}
+
+.manual-btn:hover, .manual-start:hover {
+    background-color: rgb(110, 236, 173);
+    cursor: pointer;
+}
+
+.manual h4 {
+    display: none;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.manual-start {
+    display: none;
+    border: 4px darkgray outset;
+}
+
+.undo{
+    width: 150px;
+    text-align: center;
+    margin: auto;
+    padding: 10px;
+    font-size: 20px;
+    top: -260px;
+    position: relative;
+}
+
+.undo button{
+    all: unset;
+    border-radius: 10%;
+    height: 40px;
+    width: 80px;
+    font-weight: bold;
+    font-size: 150%;
+    padding: 1px 6px 6px;
+    color: white;
+    background-color: black;
+    border: 3px double;
+}
+
+.undo button:hover{
+    cursor: pointer;
+    background-color: rgb(48, 48, 48);
 }

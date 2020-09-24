@@ -7,54 +7,91 @@
 </head>
 
 <body onload="init()">
-    <div class="container">
-        <table>
-            <thead>
-                <tr>
-                    <td>
-                        <h2>Mine Sweeper</h2>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="hints">
-                            <h2>Hints</h2>
-                            <span class="hint-1" onclick="handleHintPress(this)"></span>
-                            <span class="hint-2" onclick="handleHintPress(this)"></span>
-                            <span class="hint-3" onclick="handleHintPress(this)"></span>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3 class="lives">Lives:
-                            <span></span>
-                        </h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="diff">
-                        <h3>Choose Difficulty:</h3>
-                        <button onclick="setDifficulty(this)">Easy</button>
-                        <button onclick="setDifficulty(this)">Medium</button>
-                        <button onclick="setDifficulty(this)">Hard</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="head">
-                        <span class="mines"></span>
-                        <span class="smiley" onclick="init()"></span>
-                        <span class="timer"></span>
-                    </td>
-                </tr>
-            </thead>
-            <tbody class="board">
-            </tbody>
-        </table>
 
-    </div>
+    <table>
+            <tr>
+                <td>
+                    <h2 style="font-size: xx-large;">Mine Sweeper</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="hints">
+                        <h2>Hints</h2>
+                        <span class="hint-1" onclick="handleHintPress(this)"></span>
+                        <span class="hint-2" onclick="handleHintPress(this)"></span>
+                        <span class="hint-3" onclick="handleHintPress(this)"></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="diff">
+                        <h3>Choose Difficulty:</h3>
+                        <button class="pressable" onclick="setDifficulty(this)">Easy</button>
+                        <button class="pressable" onclick="setDifficulty(this)">Medium</button>
+                        <button class="pressable" onclick="setDifficulty(this)">Hard</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3 class="lives">
+                        <span></span>
+                    </h3>
+                </td>
+            </tr>
+            <tr>
+                <td class="head">
+                    <span class="mines"></span>
+                    <span class="smiley" onclick="init()"></span>
+                    <span class="timer"></span>
+                </td>
+            </tr>
+            <table class="best-scores">
+                <thead>
+                    <tr>
+                        <td colspan="2">Best Scores</td>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Easy</td>
+                    <td class="easy">--</td>
+                </tr>
+                <tr>
+    
+                    <td>Medium</td>
+                    <td class="medium">--</td>
+                </tr>
+                <tr>
+                    <td>Hard</td>
+                    <td class="hard">--</td>
+                </tr>
+                <tr class="reset-scores pressable">
+                    <td colspan="2" onclick="resetScores()"><span>Reset Scores</span></td>
+                </tr>
+                <div class="manual">
+                    <button class="manual-btn pressable" onclick="manualClick()">Manual Mode</button>
+                    <h4><span></span> left to place</h4>
+                    <button class="manual-start pressable" onclick="startManualGame()">Start Game</button>
+                </div>
+            </table>
+                <div class="board">
+
+                </div>
+            <div class="safe-click">
+                <button class="pressable" onclick="handleSafeClick()">Safe Click</button>
+                <h4><span>3</span> clicks remain</h4>
+            </div>
+            <div class="undo">
+                <button class="pressable" onclick="undo()">Undo</button>
+            </div>
+    </table>
+
+
     <script src="js/utils.js"></script>
     <script src="js/board.js"></script>
+    <script src="js/bonus.js"></script>
     <script src="js/main.js"></script>
 </body>
 

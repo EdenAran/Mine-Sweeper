@@ -7,21 +7,21 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getEmptyCells(board) {
-  var emptyCells = [];
+function getCellsWithElement(board, element) {
+  var cells = [];
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[i].length; j++) {
       var location = {
         i,
         j
       }
-      if (board[i][j] === '') emptyCells.push(location);
+      if (board[i][j] === element) emptyCells.push(location);
     }
   }
-  return emptyCells;
+  return cells;
 }
 
-function updateElementInnerText(className, value){
-  var elElement = document.querySelector(`.${className}`);
+function updateElementInnerText(className, value) {
+  var elElement = document.querySelector(`${className}`);
   elElement.innerText = value;
 }
