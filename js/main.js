@@ -93,7 +93,7 @@ function cellClicked(ev, elCell) {
     if (ev.button === 0) {      //Left click
         if (currCell.isShown || currCell.isMarked) return;
         updateElementInnerText('.smiley', '😲')
-        gMoves.push([location, ++gMoveId]);
+        gMoves.push([location, ++gMoveId, ev]);
         gGame.shownCount++;
         currCell.isShown = true;
         if (currCell.isMine) {
@@ -108,7 +108,7 @@ function cellClicked(ev, elCell) {
     } else if (ev.button === 2) {    //Right click
         if (!gTimerInterval) return;
         updateElementInnerText('.smiley', '😲')
-        gMoves.push([location, ++gMoveId]);
+        gMoves.push([location, ++gMoveId, ev]);
         switch (elCell.innerText) {
             case '':
                 if (gMinesCount === 0) return;
@@ -198,7 +198,7 @@ function expendEmptyCells(iIdx, jIdx) {
             if ((i === iIdx && j === jIdx) || (j < 0 || j > gLevel.size - 1) || currCell.isShown || currCell.isMarked) continue;
             currCell.isShown = true;
             gGame.shownCount++;
-            gMoves.push([{i,j}, gMoveId]);
+            gMoves.push([{i,j}, gMoveId, null]);
             renderCell({ i, j }, currCell.minesAroundCount);
             if (currCell.minesAroundCount === 0) expendEmptyCells(i, j);
         }

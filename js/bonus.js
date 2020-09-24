@@ -201,21 +201,36 @@ function undo() {
             gMoveId--;
             return;
         }
-        var location = gMoves.pop()[0];
+        var currMove = gMoves.pop()
+        var location = currMove[0];
         var currCell = gBoard[location.i][location.j];
-        if (currCell.isShown) gGame.shownCount--;
-        if (currCell.isMarked) {
-            gGame.markedCount--;
-            gMinesCount++;
+        var value = '';
+        if (currCell.isShown) {
+            console.log('1')
+            gGame.shownCount--;
+            currCell.isShown = false;
         }
-        if (currCell.isMine && !currCell.isMarked) {
+        if (currMove[2] && !currCell.isMarked && currMove[2].button === 2) {
+            console.log('4')
+            gGame.markedCount++;
+            gMinesCount--;
+            value = FLAG
+            currCell.isMarked = true;
+        }
+        else if (currCell.isMine && !currCell.isMarked) {
+            console.log('3')
             gGame.lives++;
             gMinesCount++;
         }
+        else if (currCell.isMarked) {
+            console.log('2')
+            gGame.markedCount--;
+            gMinesCount++;
+            currCell.isMarked = false;
+        }
         updateElementInnerText('.lives', getHearts(gGame.lives));
         updateElementInnerText('.mines', ('0' + gMinesCount).slice(-2));
-        currCell.isShown = false;
-        currCell.isMarked = false;
-        renderCell(location, '');
+        renderCell(location, value);
+        console.log(currMove)
     }
 }
